@@ -137,7 +137,9 @@ class DrugSearchController extends Controller
     {
         try {
             $params = $request->validated();
-            
+             if (isset($params['q'])) {
+                $params['query'] = $params['q'];
+            }
             $query = $this->drugSearchService->search($params);
             
             if ($request->boolean('with_relations')) {
@@ -351,17 +353,35 @@ class DrugSearchController extends Controller
         ]
     )]
 
-    public function autocomplete(DrugSearchRequest $request): JsonResponse
+     public function autocomplete(DrugSearchRequest $request): JsonResponse
     {
         try {
             $request->validate([
                 'query' => 'required|string|min:2|max:50',
+                'limit' => 'sometimes|integer|min:1|max:50',
             ]);
             
             $term = $request->input('query');
             $limit = $request->input('limit', 10);
             
-            $results = $this->drugSearchService->autocomplete($term, $limit);
+            // Use the search service for autocomplete
+            $query = DrugInfo::query()
+                ->where(function($q) use ($term) {
+                    $q->where('nam_fa', 'LIKE', "%{$term}%")
+                      ->orWhere('nam_en', 'LIKE', "%{$term}%")
+                      ->orWhere('des', 'LIKE', "%{$term}%");
+                })
+                ->where('vaz', 1) // Only active drugs if you have status field
+                ->select([
+                    'cod',
+                    'nam_fa',
+                    'nam_en',
+                    'des',
+                    'goroh_daroei_cod',
+                    'goroh_darmani_cod'
+                ]);
+            
+            $results = $query->limit($limit)->get();
             
             return response()->json([
                 'success' => true,

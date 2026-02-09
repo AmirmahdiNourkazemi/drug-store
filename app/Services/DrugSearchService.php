@@ -14,7 +14,7 @@ class DrugSearchService
     public function search(array $params = []): Builder
     {
         $query = DrugInfo::query();
-        
+         $searchTerm = $params['q'] ?? $params['query'] ?? null;
         // جستجو در عبارت عمومی
         if (!empty($params['query'])) {
             $searchTerm = $params['query'];
