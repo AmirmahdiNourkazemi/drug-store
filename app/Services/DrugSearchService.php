@@ -16,16 +16,16 @@ class DrugSearchService
         $query = DrugInfo::query();
          $searchTerm = $params['q'] ?? $params['query'] ?? null;
         // جستجو در عبارت عمومی
-        if (!empty($params['query'])) {
-            $searchTerm = $params['query'];
-            $searchFields = $params['search_fields'] ?? ['nam_fa', 'nam_en'];
-            
-            $query->where(function (Builder $q) use ($searchTerm, $searchFields) {
-                foreach ($searchFields as $field) {
-                    $q->orWhere($field, 'LIKE', "%{$searchTerm}%");
-                }
-            });
-        }
+           if (!empty($searchTerm)) {
+        // فیلدهای پیش‌فرض برای جستجو - mavaredmasraf هم اضافه شده
+        $searchFields = $params['search_fields'] ?? ['nam_fa', 'nam_en', 'mavaredmasraf'];
+        
+        $query->where(function (Builder $q) use ($searchTerm, $searchFields) {
+            foreach ($searchFields as $field) {
+                $q->orWhere($field, 'LIKE', "%{$searchTerm}%");
+            }
+        });
+    }
         
         // فیلتر بر اساس گروه دارویی
         if (!empty($params['goroh_daroei_cod'])) {
