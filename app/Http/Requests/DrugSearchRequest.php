@@ -22,7 +22,7 @@ class DrugSearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'q' => 'required|string|min:2|max:255',
+            'q' => 'nullable|string|min:2|max:255',
             'search_fields' => 'nullable|array',
             'search_fields.*' => 'in:nam_fa,nam_en,mavaredmasraf,avarez,tadakhol',
             'goroh_daroei_cod' => 'nullable|integer',

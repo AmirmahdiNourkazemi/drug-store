@@ -11,28 +11,28 @@ class DrugSearchService
     /**
      * جستجوی پیشرفته در داروها
      */
-    public function search(array $params = []): Builder
+   public function search(array $params = []): Builder
     {
         $query = DrugInfo::query();
-         $searchTerm = $params['q'] ?? $params['query'] ?? null;
+        $searchTerm = $params['q'] ?? $params['query'] ?? null;
+        
         // جستجو در عبارت عمومی
-           if (!empty($searchTerm)) {
-        // فیلدهای پیش‌فرض برای جستجو - mavaredmasraf هم اضافه شده
-        $searchFields = $params['search_fields'] ?? ['nam_fa', 'nam_en', 'mavaredmasraf'];
+        if (!empty($searchTerm)) {
+            $searchFields = $params['search_fields'] ?? ['nam_fa', 'nam_en', 'mavaredmasraf'];
+            
+            $query->where(function (Builder $q) use ($searchTerm, $searchFields) {
+                foreach ($searchFields as $field) {
+                    $q->orWhere($field, 'LIKE', "%{$searchTerm}%");
+                }
+            });
+        }
         
-        $query->where(function (Builder $q) use ($searchTerm, $searchFields) {
-            foreach ($searchFields as $field) {
-                $q->orWhere($field, 'LIKE', "%{$searchTerm}%");
-            }
-        });
-    }
-        
-        // فیلتر بر اساس گروه دارویی
+        // فیلتر بر اساس گروه دارویی (goroh_daroei_cod)
         if (!empty($params['goroh_daroei_cod'])) {
             $query->where('goroh_daroei_cod', $params['goroh_daroei_cod']);
         }
         
-        // فیلتر بر اساس گروه درمانی
+        // فیلتر بر اساس گروه درمانی (goroh_darmani_cod)
         if (!empty($params['goroh_darmani_cod'])) {
             $query->where('goroh_darmani_cod', $params['goroh_darmani_cod']);
         }
@@ -51,11 +51,12 @@ class DrugSearchService
         }
         
         // مرتب‌سازی
-        $query->orderBy('nam_fa', 'asc');
+        $sortBy = $params['sort_by'] ?? 'nam_fa';
+        $sortOrder = $params['sort_order'] ?? 'asc';
+        $query->orderBy($sortBy, $sortOrder);
         
         return $query;
     }
-    
     /**
      * جستجو در همه فیلدها
      */

@@ -150,8 +150,8 @@ async function loadFilterOptions() {
             const select = document.getElementById('goroh_daroei_cod');
             daroeiData.data.forEach(item => {
                 const option = document.createElement('option');
-                option.value = item.id;
-                option.textContent = item.name;
+                option.value = item.cod;
+                option.textContent = item.nam;
                 select.appendChild(option);
             });
         }
@@ -163,8 +163,8 @@ async function loadFilterOptions() {
             const select = document.getElementById('goroh_darmani_cod');
             darmaniData.data.forEach(item => {
                 const option = document.createElement('option');
-                option.value = item.id;
-                option.textContent = item.name;
+                option.value = item.cod;
+                option.textContent = item.nam_fa;
                 select.appendChild(option);
             });
         }
@@ -175,11 +175,6 @@ async function loadFilterOptions() {
 
 async function search(page = 1) {
     const query = document.getElementById('query').value;
-    if (!query.trim()) {
-        showNoResults('لطفاً عبارت جستجو را وارد کنید');
-        return;
-    }
-
     currentPage = page;
     
     // Show loading state
@@ -192,6 +187,7 @@ async function search(page = 1) {
         q: query,
         page: page,
         per_page: document.getElementById('per_page').value,
+        with_relations: true // برای دریافت اطلاعات گروه‌ها
     });
     
     // Add filters if selected
@@ -217,6 +213,85 @@ async function search(page = 1) {
         showNoResults('خطا در ارتباط با سرور');
         console.error('Search error:', error);
     }
+}
+
+// تابع renderResults را به این صورت بهبود دهید:
+function renderResults(data, meta) {
+    const box = document.getElementById('results');
+    const info = document.getElementById('resultsInfo');
+    
+    if (!data || data.length === 0) {
+        showNoResults('دارویی با مشخصات جستجو یافت نشد');
+        return;
+    }
+    
+    totalResults = meta.total;
+    
+    // Update results info
+    const start = (meta.current_page - 1) * meta.per_page + 1;
+    const end = Math.min(meta.current_page * meta.per_page, meta.total);
+    
+    // نمایش اطلاعات فیلترها
+    const gorohDaroei = document.getElementById('goroh_daroei_cod');
+    const gorohDarmani = document.getElementById('goroh_darmani_cod');
+    const gorohDaroeiText = gorohDaroei.options[gorohDaroei.selectedIndex]?.text || '';
+    const gorohDarmaniText = gorohDarmani.options[gorohDarmani.selectedIndex]?.text || '';
+    
+    let filterInfo = '';
+    if (gorohDaroei.value) filterInfo += `گروه دارویی: ${gorohDaroeiText}`;
+    if (gorohDarmani.value) {
+        if (filterInfo) filterInfo += ' | ';
+        filterInfo += `گروه درمانی: ${gorohDarmaniText}`;
+    }
+    
+    if (filterInfo) {
+        info.innerHTML = `نمایش ${start} تا ${end} از ${meta.total} نتیجه <br><span class="text-sm text-blue-600">${filterInfo}</span>`;
+    } else {
+        info.innerHTML = `نمایش ${start} تا ${end} از ${meta.total} نتیجه`;
+    }
+    
+    // Clear previous results
+    box.innerHTML = '';
+    
+    // Render results
+    data.forEach((d, index) => {
+        const item = document.createElement('div');
+        item.className = 'bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:border-blue-300';
+        
+        // اطلاعات گروه‌ها
+        let groupsInfo = '';
+        if (d.goroh_daroei) {
+            groupsInfo += `<span class="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs ml-2">${escapeHtml(d.goroh_daroei.name)}</span>`;
+        }
+        if (d.goroh_darmani) {
+            groupsInfo += `<span class="bg-green-100 text-green-600 px-2 py-1 rounded text-xs">${escapeHtml(d.goroh_darmani.name)}</span>`;
+        }
+        
+        item.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div class="flex-grow">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center font-bold">
+                            ${index + 1 + (meta.current_page - 1) * meta.per_page}
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-gray-800">${escapeHtml(d.nam_fa || 'نام نامشخص')}</h3>
+                            ${d.nam_en ? `<p class="text-gray-600 text-sm">${escapeHtml(d.nam_en)}</p>` : ''}
+                            <div class="flex gap-2 mt-1">${groupsInfo}</div>
+                        </div>
+                    </div>
+                    ${d.description ? `<p class="text-gray-600 mt-3 line-clamp-2">${escapeHtml(d.description)}</p>` : ''}
+                </div>
+                <a href="/drugs-ui/${d.cod}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg font-bold transition-colors duration-200 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fas fa-eye"></i>
+                    مشاهده جزئیات
+                </a>
+            </div>
+        `;
+        box.appendChild(item);
+    });
+    
+    renderPagination(meta);
 }
 
 function renderResults(data, meta) {
