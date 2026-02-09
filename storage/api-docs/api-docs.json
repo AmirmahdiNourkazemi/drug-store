@@ -1,0 +1,632 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Drug API",
+        "description": "مستندات API جستجوی دارو",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Server"
+        }
+    ],
+    "paths": {
+        "/api/drugs/search": {
+            "get": {
+                "tags": [
+                    "Drugs"
+                ],
+                "summary": "جستجوی دارو",
+                "description": "جستجوی دارو بر اساس نام با امکان فیلتر و صفحه‌بندی",
+                "operationId": "searchDrugs",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "نام دارو برای جستجو",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 100,
+                            "minLength": 2
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "تعداد آیتم در هر صفحه",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "with_relations",
+                        "in": "query",
+                        "description": "دریافت اطلاعات مرتبط (گروه‌های دارویی و درمانی)",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        }
+                    },
+                    {
+                        "name": "goroh_daroei_cod",
+                        "in": "query",
+                        "description": "فیلتر بر اساس گروه دارویی",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "goroh_darmani_cod",
+                        "in": "query",
+                        "description": "فیلتر بر اساس گروه درمانی",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "موفق - لیست داروها",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "نتایج جستجو"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "استامینوفن"
+                                                    },
+                                                    "brand": {
+                                                        "type": "string",
+                                                        "example": "تیلنول"
+                                                    },
+                                                    "dosage": {
+                                                        "type": "string",
+                                                        "example": "500mg"
+                                                    },
+                                                    "goroh_daroei": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطای درخواست - پارامترهای نامعتبر",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "خطا در اعتبارسنجی داده‌ها"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "q": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "فیلد q الزامی است"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "خطای داخلی سرور",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "خطا در جستجو"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "پیغام خطای فنی"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/drugs/{cod}": {
+            "get": {
+                "tags": [
+                    "Drugs"
+                ],
+                "summary": "دریافت اطلاعات کامل یک دارو",
+                "description": "دریافت اطلاعات کامل یک دارو بر اساس کد (شناسه) دارو همراه با اطلاعات مرتبط",
+                "operationId": "getDrugById",
+                "parameters": [
+                    {
+                        "name": "cod",
+                        "in": "path",
+                        "description": "کد (شناسه) دارو",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 123
+                        },
+                        "example": 123
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "موفق - اطلاعات دارو",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "اطلاعات دارو"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "cod": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "استامینوفن"
+                                                },
+                                                "brand": {
+                                                    "type": "string",
+                                                    "example": "تیلنول"
+                                                },
+                                                "generic_name": {
+                                                    "type": "string",
+                                                    "example": "پاراستامول"
+                                                },
+                                                "dosage": {
+                                                    "type": "string",
+                                                    "example": "500mg"
+                                                },
+                                                "form": {
+                                                    "type": "string",
+                                                    "example": "قرص"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "مسکن و تب‌بر"
+                                                },
+                                                "goroh_daroei": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "مسکن‌ها"
+                                                        },
+                                                        "code": {
+                                                            "type": "string",
+                                                            "example": "A01"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "example": "گروه داروهای مسکن"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "goroh_darmani": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "عمومی"
+                                                        },
+                                                        "code": {
+                                                            "type": "string",
+                                                            "example": "GEN"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "example": "داروهای عمومی"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "goroh_darmani_detail": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 3
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "مسکن‌های غیراستروئیدی"
+                                                        },
+                                                        "code": {
+                                                            "type": "string",
+                                                            "example": "NSAID"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "example": "داروهای ضدالتهاب غیراستروئیدی"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-01-01T10:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-01-01T10:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "یافت نشد - دارو با کد مورد نظر وجود ندارد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "دارو یافت نشد"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "خطای داخلی سرور",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "خطا در دریافت اطلاعات"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "پیغام خطای فنی"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/drugs/autocomplete": {
+            "get": {
+                "tags": [
+                    "Drugs"
+                ],
+                "summary": "جستجوی سریع دارو",
+                "description": "جستجوی سریع دارو برای تکمیل خودکار (autocomplete)",
+                "operationId": "autocompleteDrugs",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "متن جستجو برای تکمیل خودکار",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 50,
+                            "minLength": 2
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "تعداد نتایج",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 50,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "موفق - نتایج جستجوی سریع",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "نتایج جستجوی سریع"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "استامینوفن"
+                                                    },
+                                                    "brand": {
+                                                        "type": "string",
+                                                        "example": "تیلنول"
+                                                    },
+                                                    "dosage": {
+                                                        "type": "string",
+                                                        "example": "500mg"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطای درخواست",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "خطا در اعتبارسنجی داده‌ها"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/drugs/goroh-daroei": {
+            "get": {
+                "tags": [
+                    "Drugs"
+                ],
+                "summary": "دریافت لیست گروه‌های دارویی",
+                "description": "دریافت تمامی گروه‌های دارویی موجود در سیستم",
+                "operationId": "getGorohDaroei",
+                "responses": {
+                    "200": {
+                        "description": "موفق - لیست گروه‌های دارویی",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "لیست گروه‌های دارویی"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "مسکن‌ها"
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "A01"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "گروه داروهای مسکن"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/drugs/goroh-darmani": {
+            "get": {
+                "tags": [
+                    "Drugs"
+                ],
+                "summary": "دریافت لیست گروه‌های درمانی",
+                "description": "دریافت تمامی گروه‌های درمانی موجود در سیستم",
+                "operationId": "getGorohDarmani",
+                "responses": {
+                    "200": {
+                        "description": "موفق - لیست گروه‌های درمانی",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "لیست گروه‌های درمانی"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "قلبی و عروقی"
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "CVD"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "بیماری‌های قلبی و عروقی"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Drugs",
+            "description": "Drugs"
+        }
+    ]
+}
