@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
     description: "مستندات API جستجوی دارو"
 )]
 #[OA\Server(
-    url: "http://localhost:8000",
-    description: "Local Server"
+    url: "https://drug.approagency.ir",
+    description: "جستجوی دارو"
 )]
 class OpenApi {}
