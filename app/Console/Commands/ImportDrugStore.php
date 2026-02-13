@@ -53,8 +53,8 @@ public function handle()
 
     $targets = match ($target) {
         'mysql' => ['mysql'],
-        'pgsql' => ['pgsql_remote'],
-        default => ['mysql', 'pgsql_remote'],
+        'pgsql' => ['pgsql'],
+        default => ['mysql', 'pgsql'],
     };
 
     foreach ($targets as $connection) {
