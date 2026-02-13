@@ -47,10 +47,10 @@
                 </h1>
                 <p class="text-blue-100">مشاهده اطلاعات کامل دارو</p>
             </div>
-            <a href="/drugs-ui" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2">
+            <!-- <a href="/api/drugs-ui" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2">
                 <i class="fas fa-arrow-right"></i>
                 <span>بازگشت به جستجو</span>
-            </a>
+            </a> -->
         </div>
     </div>
 
@@ -65,7 +65,7 @@
         <i class="fas fa-exclamation-triangle text-red-500 text-7xl mb-6"></i>
         <h2 class="text-3xl font-bold text-gray-800 mb-4">خطا در دریافت اطلاعات</h2>
         <p id="errorMessage" class="text-gray-600 text-lg mb-8">داروی مورد نظر یافت نشد</p>
-        <a href="/drugs-ui" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition-all duration-200">
+        <a href="/api/drugs-ui" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition-all duration-200">
             <i class="fas fa-search ml-2"></i>
             بازگشت به صفحه جستجو
         </a>
