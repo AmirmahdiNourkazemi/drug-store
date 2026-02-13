@@ -30,7 +30,7 @@
         <h1 class="text-3xl font-bold mb-2">
             <i class="fas fa-pills mr-2"></i>سیستم جستجوی دارو
         </h1>
-        <p class="text-blue-100">جستجو در بانک اطلاعاتی داروهای ایران</p>
+        <p class="text-blue-100">جستجو در بانک اطلاعاتی </p>
     </div>
 
     <!-- Main Card -->
@@ -127,7 +127,7 @@
     
     <!-- Footer -->
     <div class="text-center text-gray-500 text-sm mt-8">
-        <p>© ۲۰۲۴ سیستم جستجوی دارو - تمامی حقوق محفوظ است</p>
+        <p>© 2026 توسعه داده شده توسط امیرمهدی نورکاظمی و تیم اپروایجنسی - تمامی حقوق محفوظ است</p>
     </div>
 </div>
 
@@ -282,7 +282,7 @@ function renderResults(data, meta) {
                     </div>
                     ${d.description ? `<p class="text-gray-600 mt-3 line-clamp-2">${escapeHtml(d.description)}</p>` : ''}
                 </div>
-                <a href="/drugs-ui/${d.cod}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg font-bold transition-colors duration-200 flex items-center gap-2 whitespace-nowrap">
+                <a href="/api/drugs-ui/${d.cod}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg font-bold transition-colors duration-200 flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-eye"></i>
                     مشاهده جزئیات
                 </a>
@@ -331,7 +331,7 @@ function renderResults(data, meta) {
                     </div>
                     ${d.description ? `<p class="text-gray-600 mt-3 line-clamp-2">${escapeHtml(d.description)}</p>` : ''}
                 </div>
-                <a href="/drugs-ui/${d.cod}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg font-bold transition-colors duration-200 flex items-center gap-2 whitespace-nowrap">
+                <a href="/api/drugs-ui/${d.cod}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg font-bold transition-colors duration-200 flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-eye"></i>
                     مشاهده جزئیات
                 </a>
