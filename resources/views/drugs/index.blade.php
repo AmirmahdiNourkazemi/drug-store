@@ -2,95 +2,155 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>جستجوی دارو</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Add FontAwesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Add Persian font -->
-<link href="https://v1.fontapi.ir/css/Vazir" rel="stylesheet">
-<style>
-    body {
-        font-family: Vazir, sans-serif;
-    }
-    .loading {
-        display: none;
-    }
-    .loading.active {
-        display: inline-block;
-    }
-</style>
-</head>
-<body class="bg-gray-50 min-h-screen">
+<head>
+    <meta charset="UTF-8">
+    <title>جستجوی دارو</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Add Persian font -->
+    <link href="https://v1.fontapi.ir/css/Vazir" rel="stylesheet">
+    <style>
+        body {
+            font-family: Vazir, sans-serif;
+        }
+        .loading {
+            display: none;
+        }
+        .loading.active {
+            display: inline-block;
+        }
+        
+        /* بهبود نمایش در موبایل */
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            
+            /* جلوگیری از سرریز شدن متن در موبایل */
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            
+            /* بهبود نمایش دکمه‌ها در موبایل */
+            button, 
+            [type="button"], 
+            [type="submit"] {
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            /* افزایش فضای کلیک برای موبایل */
+            .pagination-btn {
+                min-width: 44px;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        /* بهبود اسکرول پیشنهادات در موبایل */
+        #suggestions {
+            max-height: 50vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* جلوگیری از زوم خودکار در iOS */
+        select, input, textarea {
+            font-size: 16px !important;
+        }
+        
+        /* بهبود کلیک در موبایل */
+        .hover\:shadow-lg:hover {
+            box-shadow: none;
+        }
+        
+        @media (min-width: 768px) {
+            .hover\:shadow-lg:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+        }
+    </style>
+</head><body class="bg-gray-50 min-h-screen">
 
-<div class="max-w-6xl mx-auto p-4">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-2xl p-6 mb-6 shadow-lg">
-        <h1 class="text-3xl font-bold mb-2">
-            <i class="fas fa-pills mr-2"></i>سیستم جستجوی دارو
+<div class="max-w-6xl mx-auto p-3 sm:p-4 md:p-6">
+    <!-- Header - بهبود یافته برای موبایل -->
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-lg">
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold mb-2 flex items-center">
+            <i class="fas fa-pills ml-2"></i>
+            <span class="break-words">سیستم جستجوی دارو</span>
         </h1>
-        <p class="text-blue-100">جستجو در بانک اطلاعاتی </p>
+        <p class="text-blue-100 text-sm sm:text-base">جستجو در بانک اطلاعاتی داروها</p>
     </div>
 
     <!-- Main Card -->
-    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-        <!-- Search Section -->
-        <div class="mb-8">
-            <label class="block text-gray-700 text-sm font-bold mb-3">
-                <i class="fas fa-search mr-2"></i>جستجوی دارو
+    <div class="bg-white rounded-2xl shadow-xl p-4 sm:p-6 mb-6">
+        <!-- Search Section - بهبود یافته برای موبایل -->
+        <div class="mb-6 sm:mb-8">
+            <label class="block text-gray-700 text-sm sm:text-base font-bold mb-2 sm:mb-3">
+                <i class="fas fa-search ml-2"></i>جستجوی دارو
             </label>
-            <div class="flex flex-col md:flex-row gap-4">
-                <div class="relative flex-grow">
+            
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <div class="relative flex-grow w-full">
                     <div class="relative">
                         <input 
                             id="query" 
                             type="text" 
-                            placeholder="نام فارسی یا انگلیسی دارو را وارد کنید..." 
-                            class="w-full border-2 border-gray-300 rounded-xl p-4 pr-12 text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+                            placeholder="نام فارسی یا انگلیسی دارو..." 
+                            class="w-full border-2 border-gray-300 rounded-xl p-3 sm:p-4 pr-10 sm:pr-12 text-base sm:text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
                             onkeypress="if(event.key === 'Enter') search(1)"
                             oninput="autocomplete()"
+                            autocomplete="off"
                         >
-                        <div class="absolute left-3 top-4 text-gray-400">
-                            <i class="fas fa-pills"></i>
+                        <div class="absolute left-3 top-3 sm:top-4 text-gray-400">
+                            <i class="fas fa-pills text-lg sm:text-xl"></i>
                         </div>
                     </div>
-                    <div id="suggestions" class="absolute z-50 bg-white w-full mt-1 border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                    
+                    <!-- Autocomplete - بهبود یافته برای موبایل -->
+                    <div id="suggestions" class="absolute z-50 bg-white w-full mt-1 border border-gray-200 rounded-xl shadow-lg max-h-60 sm:max-h-80 overflow-y-auto hidden"></div>
                 </div>
+                
+                <!-- دکمه جستجو - بهینه شده برای موبایل -->
                 <button 
                     onclick="search(1)" 
-                    class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                    class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 min-h-[48px] sm:min-h-0"
                     id="searchBtn"
                 >
-                    <span id="searchText">جستجو</span>
+                    <span id="searchText" class="whitespace-nowrap">جستجو</span>
                     <i class="fas fa-search" id="searchIcon"></i>
                     <i class="fas fa-spinner fa-spin loading" id="searchSpinner"></i>
                 </button>
             </div>
             
-            <!-- Filters -->
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-gray-600 text-sm font-bold mb-2">گروه دارویی</label>
-                    <select id="goroh_daroei_cod" class="w-full border border-gray-300 rounded-lg p-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <!-- Filters - بهبود یافته برای موبایل -->
+            <div class="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <div class="w-full">
+                    <label class="block text-gray-600 text-xs sm:text-sm font-bold mb-1 sm:mb-2">گروه دارویی</label>
+                    <select id="goroh_daroei_cod" class="w-full border border-gray-300 rounded-lg p-2.5 sm:p-3 text-sm sm:text-base focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white">
                         <option value="">همه گروه‌ها</option>
-                        <!-- Will be populated by JavaScript -->
                     </select>
                 </div>
-                <div>
-                    <label class="block text-gray-600 text-sm font-bold mb-2">گروه درمانی</label>
-                    <select id="goroh_darmani_cod" class="w-full border border-gray-300 rounded-lg p-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <div class="w-full">
+                    <label class="block text-gray-600 text-xs sm:text-sm font-bold mb-1 sm:mb-2">گروه درمانی</label>
+                    <select id="goroh_darmani_cod" class="w-full border border-gray-300 rounded-lg p-2.5 sm:p-3 text-sm sm:text-base focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white">
                         <option value="">همه گروه‌ها</option>
-                        <!-- Will be populated by JavaScript -->
                     </select>
                 </div>
-                <div>
-                    <label class="block text-gray-600 text-sm font-bold mb-2">تعداد در هر صفحه</label>
-                    <select id="per_page" class="w-full border border-gray-300 rounded-lg p-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                        <option value="10">10</option>
-                        <option value="20" selected>20</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
+                <div class="w-full sm:col-span-2 lg:col-span-1">
+                    <label class="block text-gray-600 text-xs sm:text-sm font-bold mb-1 sm:mb-2">تعداد در هر صفحه</label>
+                    <select id="per_page" class="w-full border border-gray-300 rounded-lg p-2.5 sm:p-3 text-sm sm:text-base focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white">
+                        <option value="10">۱۰</option>
+                        <option value="20" selected>۲۰</option>
+                        <option value="50">۵۰</option>
+                        <option value="100">۱۰۰</option>
                     </select>
                 </div>
             </div>
@@ -98,36 +158,39 @@
 
         <!-- Results Section -->
         <div id="resultsContainer" class="hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800">
-                    <i class="fas fa-list mr-2"></i>نتایج جستجو
+            <!-- Header نتایج - بهبود یافته برای موبایل -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-800">
+                    <i class="fas fa-list ml-2"></i>نتایج جستجو
                 </h2>
-                <div id="resultsInfo" class="text-gray-600"></div>
+                <div id="resultsInfo" class="text-sm sm:text-base text-gray-600"></div>
             </div>
             
-            <div id="results" class="space-y-4"></div>
+            <!-- لیست نتایج - بهبود یافته برای موبایل -->
+            <div id="results" class="space-y-3 sm:space-y-4"></div>
             
             <!-- Loading Indicator -->
-            <div id="loading" class="text-center py-8 hidden">
-                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                <p class="mt-2 text-gray-600">در حال بارگذاری...</p>
+            <div id="loading" class="text-center py-6 sm:py-8 hidden">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <p class="mt-2 text-sm sm:text-base text-gray-600">در حال بارگذاری...</p>
             </div>
             
-            <!-- No Results -->
-            <div id="noResults" class="text-center py-12 hidden">
-                <i class="fas fa-search text-gray-300 text-6xl mb-4"></i>
-                <h3 class="text-xl font-bold text-gray-600 mb-2">دارویی یافت نشد</h3>
-                <p class="text-gray-500">لطفاً عبارت جستجوی خود را تغییر دهید</p>
+            <!-- No Results - بهبود یافته برای موبایل -->
+            <div id="noResults" class="text-center py-8 sm:py-12 hidden">
+                <i class="fas fa-search text-gray-300 text-4xl sm:text-6xl mb-3 sm:mb-4"></i>
+                <h3 class="text-lg sm:text-xl font-bold text-gray-600 mb-2">دارویی یافت نشد</h3>
+                <p class="text-sm sm:text-base text-gray-500">لطفاً عبارت جستجوی خود را تغییر دهید</p>
             </div>
 
-            <!-- Pagination -->
-            <div id="pagination" class="flex justify-center gap-2 mt-8 flex-wrap"></div>
+            <!-- Pagination - بهبود یافته برای موبایل -->
+            <div id="pagination" class="flex justify-center gap-1 sm:gap-2 mt-6 sm:mt-8 flex-wrap"></div>
         </div>
     </div>
     
-    <!-- Footer -->
-    <div class="text-center text-gray-500 text-sm mt-8">
-        <p>© 2026 توسعه داده شده توسط امیرمهدی نورکاظمی و تیم اپروایجنسی - تمامی حقوق محفوظ است</p>
+    <!-- Footer - بهبود یافته برای موبایل -->
+    <div class="text-center text-gray-500 text-xs sm:text-sm mt-6 sm:mt-8 px-2">
+        <p>© ۲۰۲۶ توسعه داده شده توسط امیرمهدی نورکاظمی و تیم اپروایجنسی</p>
+        <p class="mt-1">تمامی حقوق محفوظ است</p>
     </div>
 </div>
 
